@@ -1,297 +1,528 @@
+### index.html
+```html
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora iPhone 27.2</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>Calculadora</title>
+<style>
+  :root {
+    --bg: #000000;
+    --display-text: #ffffff;
+    --display-sub: #8e8e93;
+    --key-num-bg: #333333;
+    --key-num-active: #737373;
+    --key-fn-bg: #a5a5a5;
+    --key-fn-active: #d9d9d9;
+    --key-fn-text: #000000;
+    --key-op-bg: #ff9f0a;
+    --key-op-active: #fcc78b;
+    --key-op-text: #ffffff;
+    --key-op-selected-bg: #ffffff;
+    --key-op-selected-text: #ff9f0a;
+    --sci-bg: #1c1c1e;
+    --sci-key-bg: #2c2c2e;
+    --sci-key-active: #48484a;
+    --sci-key-text: #ffffff;
+    --sci-fn-bg: #3a3a3c;
+    --sci-fn-active: #5a5a5c;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --radius: 999px;
+  }
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
 
-        .calculator {
-            width: 380px;
-            background: #000;
-            border-radius: 45px;
-            padding: 25px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-        }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: var(--bg);
+    overflow: hidden;
+    font-family: var(--font);
+    color: var(--display-text);
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: none;
+  }
 
-        .display {
-            background: #000;
-            color: #fff;
-            font-size: 72px;
-            font-weight: 300;
-            text-align: right;
-            padding: 30px 20px;
-            margin-bottom: 20px;
-            border-radius: 20px;
-            min-height: 120px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-            overflow: hidden;
-            word-wrap: break-word;
-        }
+  body {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
+  .app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0 8px 8px 8px;
+  }
 
-        button {
-            border: none;
-            border-radius: 50%;
-            font-size: 32px;
-            font-weight: 400;
-            cursor: pointer;
-            transition: all 0.2s;
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px 2px 10px;
+    height: 34px;
+    flex: 0 0 auto;
+  }
 
-        button:active {
-            transform: scale(0.95);
-            opacity: 0.7;
-        }
+  .top-btn {
+    background: transparent;
+    border: none;
+    color: #ff9f0a;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 6px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
+    min-width: 44px;
+    min-height: 30px;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+  .top-btn:active {
+    opacity: 0.5;
+  }
+  .top-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-        .number, .decimal {
-            background: #333;
-            color: #fff;
-        }
+  /* ---------- Display ---------- */
+  .display {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 4px 14px 8px 14px;
+    min-height: 92px;
+    overflow: hidden;
+    position: relative;
+  }
 
-        .number:hover, .decimal:hover {
-            background: #4a4a4a;
-        }
+  .expr {
+    font-family: var(--font);
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--display-sub);
+    letter-spacing: 0.2px;
+    text-align: right;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    min-height: 18px;
+    opacity: 0.9;
+    transition: opacity 0.15s ease;
+  }
 
-        .operator {
-            background: #ff9f0a;
-            color: #fff;
-            font-size: 38px;
-        }
+  .result {
+    font-family: var(--font);
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 1.02;
+    letter-spacing: -2px;
+    color: var(--display-text);
+    text-align: right;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    direction: ltr;
+    transition: font-size 0.08s ease-out;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 
-        .operator:hover {
-            background: #ffb340;
-        }
+  .result.small { font-size: 60px; letter-spacing: -1.5px; }
+  .result.xsmall { font-size: 48px; letter-spacing: -1px; }
+  .result.xxsmall { font-size: 38px; letter-spacing: -0.5px; }
+  .result.xxxsmall { font-size: 30px; letter-spacing: 0; }
+  .result.tiny { font-size: 24px; letter-spacing: 0; }
 
-        .operator.active {
-            background: #fff;
-            color: #ff9f0a;
-        }
+  .result.error {
+    color: #ff453a;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
 
-        .function {
-            background: #a6a6a6;
-            color: #000;
-            font-size: 28px;
-        }
+  /* ---------- Indicator (angle mode / memory) ---------- */
+  .indicators {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 0 14px 4px 14px;
+    height: 14px;
+    flex: 0 0 auto;
+    font-size: 11px;
+    color: var(--display-sub);
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    justify-content: flex-end;
+  }
+  .ind-chip {
+    display: none;
+  }
+  .ind-chip.on {
+    display: inline-block;
+    opacity: 0.85;
+  }
 
-        .function:hover {
-            background: #d4d4d4;
-        }
+  /* ---------- Scientific panel ---------- */
+  .sci-panel {
+    display: none;
+    flex: 0 0 auto;
+    background: var(--sci-bg);
+    border-radius: 18px;
+    padding: 8px;
+    margin-bottom: 6px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .sci-panel.open {
+    display: grid;
+  }
+  .sci-key {
+    background: var(--sci-key-bg);
+    color: var(--sci-key-text);
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 400;
+    padding: 0;
+    height: 40px;
+    cursor: pointer;
+    transition: background-color 0.12s ease, transform 0.08s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    line-height: 1;
+  }
+  .sci-key.fn {
+    background: var(--sci-fn-bg);
+    font-size: 14px;
+  }
+  .sci-key:active,
+  .sci-key.pressed {
+    background: var(--sci-key-active);
+    transform: scale(0.94);
+  }
+  .sci-key.fn:active,
+  .sci-key.fn.pressed {
+    background: var(--sci-fn-active);
+  }
+  .sci-key.accent {
+    color: #ff9f0a;
+  }
+  .sci-key.angle {
+    color: #ff9f0a;
+    font-weight: 600;
+  }
 
-        .zero {
-            grid-column: span 2;
-            border-radius: 50px;
-            justify-content: flex-start;
-            padding-left: 32px;
-        }
+  /* ---------- Keypad ---------- */
+  .keypad {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 12px;
+    min-height: 0;
+    padding: 2px 0 0 0;
+  }
 
-        .special-function {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            font-size: 24px;
-        }
+  .key {
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    touch-action: manipulation;
+    transition: background-color 0.14s ease, color 0.14s ease, transform 0.08s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    user-select: none;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+  }
 
-        .special-function:hover {
-            background: linear-gradient(135deg, #7c8ff0 0%, #8a5bb8 100%);
-        }
+  .key.num {
+    background: var(--key-num-bg);
+    color: var(--display-text);
+  }
+  .key.fn {
+    background: var(--key-fn-bg);
+    color: var(--key-fn-text);
+    font-weight: 500;
+    font-size: 30px;
+  }
+  .key.op {
+    background: var(--key-op-bg);
+    color: var(--key-op-text);
+    font-size: 40px;
+    font-weight: 300;
+  }
 
-        @media (max-width: 420px) {
-            .calculator {
-                width: 95%;
-                padding: 20px;
-            }
+  .key.pressed {
+    transform: scale(0.96);
+  }
+  .key.num.pressed { background: var(--key-num-active); }
+  .key.fn.pressed { background: var(--key-fn-active); }
+  .key.op.pressed { background: var(--key-op-active); }
 
-            .display {
-                font-size: 56px;
-                min-height: 100px;
-            }
+  .key.op.selected {
+    background: var(--key-op-selected-bg);
+    color: var(--key-op-selected-text);
+  }
 
-            button {
-                font-size: 28px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="calculator">
-        <div class="display" id="display">0</div>
-        <div class="buttons">
-            <button class="function" onclick="clearAll()">AC</button>
-            <button class="function" onclick="toggleSign()">+/-</button>
-            <button class="function" onclick="percentage()">%</button>
-            <button class="operator" onclick="setOperator('÷')">÷</button>
+  .key.zero {
+    grid-column: span 2;
+    justify-content: flex-start;
+    padding-left: 30px;
+  }
 
-            <button class="number" onclick="appendNumber('7')">7</button>
-            <button class="number" onclick="appendNumber('8')">8</button>
-            <button class="number" onclick="appendNumber('9')">9</button>
-            <button class="operator" onclick="setOperator('×')">×</button>
+  .key svg {
+    width: 30px;
+    height: 30px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .key.op svg {
+    width: 26px;
+    height: 26px;
+    stroke-width: 2.6;
+  }
 
-            <button class="number" onclick="appendNumber('4')">4</button>
-            <button class="number" onclick="appendNumber('5')">5</button>
-            <button class="number" onclick="appendNumber('6')">6</button>
-            <button class="operator" onclick="setOperator('−')">−</button>
+  /* ---------- History drawer ---------- */
+  .history {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    animation: fadeIn 0.2s ease;
+  }
+  .history.open { display: flex; }
 
-            <button class="number" onclick="appendNumber('1')">1</button>
-            <button class="number" onclick="appendNumber('2')">2</button>
-            <button class="number" onclick="appendNumber('3')">3</button>
-            <button class="operator" onclick="setOperator('+')">+</button>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-            <button class="number zero" onclick="appendNumber('0')">0</button>
-            <button class="decimal" onclick="appendDecimal()">,</button>
-            <button class="operator" onclick="calculate()">=</button>
-        </div>
-    </div>
+  .history-inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1c1c1e;
+    margin: 12px;
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 0;
+    animation: slideUp 0.25s ease;
+  }
 
-    <script>
-        let currentValue = '0';
-        let previousValue = null;
-        let operator = null;
-        let shouldResetDisplay = false;
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0.6; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-        const display = document.getElementById('display');
+  .history-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid #3a3a3c;
+    flex: 0 0 auto;
+  }
+  .history-head h2 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+  }
+  .history-close {
+    background: #3a3a3c;
+    border: none;
+    color: #fff;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+  .history-close:active { opacity: 0.6; }
 
-        function updateDisplay() {
-            const formatted = parseFloat(currentValue).toLocaleString('pt-BR', {
-                maximumFractionDigits: 9
-            });
-            display.textContent = currentValue.includes('.') && currentValue.endsWith('.') 
-                ? formatted + ',' 
-                : formatted.replace('.', ',');
-        }
+  .history-clear {
+    background: transparent;
+    border: none;
+    color: #ff453a;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .history-clear:active { opacity: 0.5; }
 
-        function appendNumber(num) {
-            if (shouldResetDisplay) {
-                currentValue = num;
-                shouldResetDisplay = false;
-            } else {
-                currentValue = currentValue === '0' ? num : currentValue + num;
-            }
-            updateDisplay();
-        }
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 8px;
+    min-height: 0;
+  }
 
-        function appendDecimal() {
-            if (shouldResetDisplay) {
-                currentValue = '0.';
-                shouldResetDisplay = false;
-            } else if (!currentValue.includes('.')) {
-                currentValue += '.';
-            }
-            updateDisplay();
-        }
+  .history-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8e8e93;
+    font-size: 15px;
+    text-align: center;
+    padding: 30px;
+    line-height: 1.5;
+  }
 
-        function clearAll() {
-            currentValue = '0';
-            previousValue = null;
-            operator = null;
-            shouldResetDisplay = false;
-            removeActiveOperator();
-            updateDisplay();
-        }
+  .history-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+    border-radius: 14px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+  .history-item:active { background: #2c2c2e; }
 
-        function toggleSign() {
-            currentValue = (parseFloat(currentValue) * -1).toString();
-            updateDisplay();
-        }
+  .history-expr {
+    font-size: 13px;
+    color: #8e8e93;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  .history-res {
+    font-size: 22px;
+    color: #fff;
+    text-align: right;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-        function percentage() {
-            currentValue = (parseFloat(currentValue) / 100).toString();
-            updateDisplay();
-        }
+  .history-item-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .hist-act {
+    background: #3a3a3c;
+    border: none;
+    color: #ff9f0a;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .hist-act:active { opacity: 0.6; }
 
-        function setOperator(op) {
-            if (operator !== null && !shouldResetDisplay) {
-                calculate();
-            }
-            previousValue = currentValue;
-            operator = op;
-            shouldResetDisplay = true;
-            
-            removeActiveOperator();
-            const operators = document.querySelectorAll('.operator');
-            operators.forEach(btn => {
-                if (btn.textContent === op) {
-                    btn.classList.add('active');
-                }
-            });
-        }
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 20px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(60,60,67,0.95);
+    color: #fff;
+    font-size: 14px;
+    font-family: var(--font);
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 
-        function removeActiveOperator() {
-            document.querySelectorAll('.operator').forEach(btn => {
-                btn.classList.remove('active');
-            });
-        }
-
-        function calculate() {
-            if (operator === null || previousValue === null) return;
-
-            const prev = parseFloat(previousValue);
-            const current = parseFloat(currentValue);
-            let result;
-
-            switch (operator) {
-                case '+':
-                    result = prev + current;
-                    break;
-                case '−':
-                    result = prev - current;
-                    break;
-                case '×':
-                    result = prev * current;
-                    break;
-                case '÷':
-                    result = current !== 0 ? prev / current : 'Erro';
-                    break;
-                default:
-                    return;
-            }
-
-            currentValue = result.toString();
-            operator = null;
-            previousValue = null;
-            shouldResetDisplay = true;
-            removeActiveOperator();
-            updateDisplay();
-        }
-
-        // Suporte para teclado
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
-            if (e.key === '.') appendDecimal();
-            if (e.key === '+') setOperator('+');
-            if (e.key === '-') setOperator('−');
-            if (e.key === '*') setOperator('×');
-            if (e.key === '/') { e.preventDefault(); setOperator('÷'); }
-            if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); }
-            if (e.key === 'Escape') clearAll();
-            if (e.key === '%') percentage();
-        });
-
-        updateDisplay();
-    </script>
-</body>
-</html>
-```
+  /* ---------- Landscape adjustments ---------- */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .app { padding: 0 6px 6px 6px; }
+    .topbar { height: 26px; padding: 2px 6px 0 6px; }
+    .display { min-height: 60px; padding: 2px 12px 4px 12px; }
+    .result { font-size: 46px; letter-spacing: -1px; }
+    .result.small { font-size: 40px; }
+    .result.xsmall { font-size: 34px; }
+    .result.xxsmall { font-size: 28px; }
+    .result.xxxsmall { font-size: 24px; }
+    .result.tiny { font-size: 20px; }
+    .expr { font-size: 13px; min-height: 16px; }
+    .keypad { gap: 8px; }
+    .key { font-size: 24px; }
+    .key.fn { font-size: 22px; }
+    .key.op { font-size: 28px; }
+    .key.zero { padding-left: 22px; }
+    .key svg { width: 22
